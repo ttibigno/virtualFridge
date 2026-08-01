@@ -1,0 +1,63 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: "frigo"
+  description: ""
+  license:
+     name: GPLv3
+servers:
+   url: http://localhost:8000/api/v1
+   description: Backend
+paths:
+  /fridge:
+    get:
+      description: Get all the content of one fridge
+      responses:
+        '200':
+          description: 'Collection of items'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+    post:
+      parameters:
+        - name: authenticateToken
+          in: header
+          schema:
+            type: string
+      description: 'Post an activity'
+      requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: "#/components/schemas/Item"
+  /fridge/{name}:
+    get:
+      parameters:
+        - name: name
+          in: path
+          schema:
+            type: string
+      description: Get all the items of one person
+      responses:
+        '200':
+          description: "Collection of items of one person"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+
+components:
+  schemas:
+    Item:
+      type: object
+      required:
+        - name
+        - ownedBy
