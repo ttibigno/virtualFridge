@@ -3,3 +3,14 @@ services:
     build: ./backend/
     ports:
       - "8000:8000"
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: backend_db
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
