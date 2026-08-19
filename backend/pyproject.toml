@@ -5,5 +5,6 @@ requires-python = ">=3.14"
 dependencies = [
     "fastapi[standard]",
     "SQLAlchemy",
-    "psycopg[binary,pool]" #https://docs.sqlalchemy.org/en/21/dialects/postgresql.html#dialect-postgresql
+    "psycopg[binary,pool]", #https://docs.sqlalchemy.org/en/21/dialects/postgresql.html#dialect-postgresql
+    "pydantic"
 ]
