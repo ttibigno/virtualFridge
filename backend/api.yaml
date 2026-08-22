@@ -22,12 +22,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/Item'
     post:
-      parameters:
-        - name: authenticateToken
-          in: header
-          schema:
-            type: string
-      description: 'Post an activity'
+      description: 'Add an item to the fridge'
       requestBody:
         required: true
         content:
@@ -38,13 +33,13 @@ paths:
                 $ref: "#/components/schemas/Item"
       responses:
         '200':
-          description: "New item"
+          description: "New item added"
           
 
   /fridge/{name}:
     get:
       parameters:
-        - name: name
+        - name: ownedBy
           in: path
           required: true
           schema:
@@ -67,3 +62,55 @@ components:
       required:
         - name
         - ownedBy
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          maxLength: 30
+        ownedBy:
+          type: string
+          maxLength: 20
+        categoryId:
+          type: integer
+        amount:
+          type: number
+          format: float
+        unit:
+          type: string
+          enum:
+            - g
+            - kg
+            - ml
+            - l
+            - unit
+        expDate: #Non nullable ma opzionale nel POST!! Se non presente prende la stima della Category
+          type: string
+          format: date
+          readOnly: true
+        openedAt:
+          type: string
+          format: date-time
+          nullable: true
+          readOnly: true
+    Category:
+      type: object
+      required:
+        - name
+        - shelfLife
+      properties:
+        id:
+          type: integer
+          readOnly: true
+        name:
+          type: string
+          maxLength: 20
+        shelfLife:
+          type: integer
+          description: Shelf life in days
+        openLife:
+          type: integer
+          nullable: true
+          description: Shelf life in days after opening

@@ -7,9 +7,14 @@ from schemas.Item import ItemPost
 fridgeRouter = APIRouter(prefix="/fridge")
 
 @fridgeRouter.get("")
-async def getFridge(database: Session = Depends(database_session)):
-    itemList = database.query(Item).all()
-    return itemList
+async def getFridge(
+                    ownedBy: str | None = None,
+                    database: Session = Depends(database_session)
+                    ):
+    if ownedBy is None:
+        return database.query(Item).all()
+    
+    return database.query(Item).filter(Item.ownedBy == ownedBy).all()
 
 @fridgeRouter.post("")
 async def postFridge(
@@ -17,8 +22,12 @@ async def postFridge(
                     database: Session = Depends(database_session)
                     ):
         item = Item(
-            name=data.name,
-            ownedBy=data.ownedBy
+            name = data.name,
+            ownedBy = data.ownedBy,
+            categoryId = data.categoryId,
+            amount = data.amount,
+            unit = data.unit,
+            expDate = data.expDate
         )
     
         database.add(item)
