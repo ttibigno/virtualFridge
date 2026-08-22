@@ -14,6 +14,6 @@ class Item(Base):
     ownedBy: Mapped[str] = mapped_column(String(20))
     categoryId: Mapped[int | None] = mapped_column(ForeignKey("category.id"))
     amount: Mapped[float | None] = mapped_column()
-    unit: Mapped[str | None] = mapped_column(String(4))
+    unit: Mapped[str | None] = mapped_column(String(5))
     expDate: Mapped[date | None] = mapped_column()
     openedAt: Mapped[datetime | None] = mapped_column(nullable = True)

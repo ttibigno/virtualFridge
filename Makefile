@@ -1,8 +1,8 @@
 install:
 	docker compose up --build
 run:
-	docker compuse up
+	docker compose up
 stop:
 	docker compose down
 uninstall:
-	docker compose down --rmi all
+	docker compose down --rmi all -v

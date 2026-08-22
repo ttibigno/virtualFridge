@@ -34,7 +34,38 @@ paths:
       responses:
         '200':
           description: "New item added"
-          
+
+  /fridge/{itemId}:
+    get:
+      description: Get the item with the specified itemId
+      responses:
+        '200':
+          description: 'Searched item'
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Item'
+    patch:
+      description: Set the item with the specified itemId as Opened
+      responses:
+        '200':
+          description: 'Item updated'
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Item'
+    delete:
+      description: Delete the item with the specified itemId
+      responses:
+        '200':
+          description: 'Item updated'
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Item'
 
   /fridge/{name}:
     get:
@@ -85,7 +116,7 @@ components:
             - kg
             - ml
             - l
-            - unit
+            - piece
         expDate: #Non nullable ma opzionale nel POST!! Se non presente prende la stima della Category
           type: string
           format: date
