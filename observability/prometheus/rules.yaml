@@ -1,0 +1,12 @@
+ rules:
+      - alert: ExpirationWorkerStale
+        expr: time() - vietnam_park_expiration_last_success_timestamp_seconds > 8
+        for: 2s
+        labels:
+          severity: critical
+        annotations:
+          summary: "Expiration worker has not succeeded in over 8s"
+          description: |
+            The reservation-expiration worker has been stale for
+            {{ $value | humanizeDuration }}. The job is silently failing or
+            the worker process is down.

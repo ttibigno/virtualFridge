@@ -1,16 +1,86 @@
+name: fridge
+
 services:
   backend:
     build: ./backend/
     ports:
       - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
   postgres:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: backend_db
+    volumes:
+      - postgres-data:/var/lib/postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d backend_db"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
   adminer:
     image: adminer
     restart: always
     ports:
       - 8080:8080
+  loki:
+    image: grafana/loki:3.7.0
+    command: -config.file=/etc/loki/loki-config.yaml
+    volumes:
+     # - ./compose.yaml:/mnt/config
+      - ./observability/loki/loki-config.yaml:/etc/loki/loki-config.yaml
+      - loki-data:/tmp/loki
+    ports:
+      - 3100:3100
+  promtail:
+    image: grafana/promtail:3.6.11
+    command: --config.file=/etc/promtail/promtail-config.yaml
+    volumes:
+      - ./observability/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+  grafana:
+    image: grafana/grafana-enterprise
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - ./observability/grafana/provisioning:/etc/grafana/provisioning
+      - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
+      - grafana-data:/var/lib/grafana
+    ports: 
+      - 3000:3000
+    depends_on:
+      - loki
+      - prometheus
+  prometheus:
+    image: prom/prometheus:v3.11.3
+    command: --config.file=/etc/prometheus/prometheus.yaml
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./observability/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./observability/prometheus/rules.yaml:/etc/prometheus/rules.yaml:ro
+      - prometheus-data:/prometheus
+
+
+volumes:
+  loki-data:
+  grafana-data:
+  prometheus-data:
+  postgres-data:
+  
+  #alloy:
+  #  image: grafana/alloy:latest
+  #  command: 
+  #    - --storage.path=var/lib/alloy/data
+  #    - /etc/alloy/config.alloy
+  #  volumes:
+  #    - ./observability/alloy/alloy-config.yml:/etc/alloy/config.alloy
+  #  ports: 
+  #    - 12345:12345
