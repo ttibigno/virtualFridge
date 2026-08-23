@@ -1,3 +1,5 @@
+.PHONY: install run stop uninstall cleanup
+
 install:
 	docker compose up --build
 run:
@@ -5,4 +7,7 @@ run:
 stop:
 	docker compose down
 uninstall:
-	docker compose down --rmi all -v
+	docker compose down --remove-orphans --rmi all -v
+cleanup:
+	docker compose down --remove-orphans --rmi all -v
+	docker system prune -af

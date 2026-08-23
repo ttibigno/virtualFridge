@@ -1,21 +1,25 @@
 from fastapi import APIRouter,Depends
 from sqlalchemy.orm import Session
-from classes.Item import Item
+from tables.Item import Item
 from database import database_session
 from schemas.Item import ItemPost
 from helpers.categoryH import fixItemH, openItemH
+from helpers.timeH import calcDate, today
 
 fridgeRouter = APIRouter(prefix="/fridge")
 
 @fridgeRouter.get("")
 async def getItem(
                     ownedBy: str | None = None,
+                    expiresIn: int | None = None,
                     currDbSession: Session = Depends(database_session)
                     ):
-    if ownedBy is None:
-        return currDbSession.query(Item).all()
-    
-    return currDbSession.query(Item).filter(Item.ownedBy == ownedBy).all()
+    query = currDbSession.query(Item)
+    if (ownedBy is not None):
+        query = query.filter(Item.ownedBy == ownedBy)
+    if (expiresIn is not None):
+        query = query.filter(Item.expDate <= calcDate(today(), expiresIn), Item.expDate >= today())
+    return query.all()
 
 @fridgeRouter.post("")
 async def postItem(

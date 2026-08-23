@@ -1,5 +1,5 @@
-from classes.Category import Category
-from classes.Item import Item
+from tables.Category import Category
+from tables.Item import Item
 from schemas.Item import Unit
 from sqlalchemy.orm import Session
 from helpers.timeH import now, today, calcDate

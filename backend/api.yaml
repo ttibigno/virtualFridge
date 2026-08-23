@@ -12,6 +12,20 @@ paths:
   /fridge:
     get:
       description: Get all the content of one fridge
+      parameters:
+        - name: ownedBy
+          in: query
+          description: Filters items by owner
+          required: false
+          schema:
+            type: string
+        - name: expiresIn
+          in: query
+          description: Filters items expiring in a given number of days
+          required: false
+          schema:
+            type: integer
+            minimum: 0
       responses:
         '200':
           description: 'Collection of items'
@@ -28,12 +42,14 @@ paths:
         content:
           application/json:
             schema:
-              type: array
-              items:
-                $ref: "#/components/schemas/Item"
+              $ref: "#/components/schemas/ItemPost"
       responses:
         '200':
           description: "New item added"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Item"
 
   /fridge/{itemId}:
     get:
@@ -44,7 +60,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/components/schemas/Item'
     patch:
       description: Set the item with the specified itemId as Opened
@@ -54,7 +69,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/components/schemas/Item'
     delete:
       description: Delete the item with the specified itemId
@@ -64,35 +78,20 @@ paths:
           content:
             application/json:
               schema:
-                type: object
                 $ref: '#/components/schemas/Item'
-
-  /fridge/{name}:
-    get:
-      parameters:
-        - name: ownedBy
-          in: path
-          required: true
-          schema:
-            type: string
-      description: Get all the items of one person
-      responses:
-        '200':
-          description: "Collection of items of one person"
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Item'
 
 components:
   schemas:
     Item:
       type: object
       required:
+        - id
         - name
         - ownedBy
+        - categoryId
+        - amount
+        - unit
+        - expDate
       properties:
         id:
           type: string
@@ -117,7 +116,7 @@ components:
             - ml
             - l
             - piece
-        expDate: #Non nullable ma opzionale nel POST!! Se non presente prende la stima della Category
+        expDate: 
           type: string
           format: date
           readOnly: true
@@ -126,6 +125,40 @@ components:
           format: date-time
           nullable: true
           readOnly: true
+          
+    ItemPost:
+      type: object
+      required:
+        - name
+        - ownedBy
+        - categoryId
+      properties:
+        name:
+          type: string
+          maxLength: 30
+        ownedBy:
+          type: string
+          maxLength: 20
+        categoryId:
+          type: integer
+        amount:
+          type: number
+          format: float
+          nullable: true
+        unit:
+          type: string
+          enum:
+            - g
+            - kg
+            - ml
+            - l
+            - piece
+          nullable: true
+        expDate: 
+          type: string
+          format: date
+          nullable: true
+
     Category:
       type: object
       required:
@@ -141,7 +174,7 @@ components:
         shelfLife:
           type: integer
           description: Shelf life in days
-        openLife:
+        openedLife:
           type: integer
           nullable: true
           description: Shelf life in days after opening

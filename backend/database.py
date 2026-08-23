@@ -1,7 +1,7 @@
-from classes.Category import Category
+from tables.Category import Category
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from classes.Item import Base
+from tables.Item import Base
 
 #https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
 engine = create_engine("postgresql+psycopg://postgres:password@postgres/backend_db",
