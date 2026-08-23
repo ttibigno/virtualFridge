@@ -33,7 +33,7 @@ services:
     volumes:
      # - ./compose.yaml:/mnt/config
       - ./observability/loki/loki-config.yaml:/etc/loki/loki-config.yaml
-      - loki-data:/tmp/loki
+      - loki-data:/loki
     ports:
       - 3100:3100
   promtail:
@@ -43,7 +43,7 @@ services:
       - ./observability/promtail/promtail-config.yaml:/etc/promtail/promtail-config.yaml
       - /var/run/docker.sock:/var/run/docker.sock
   grafana:
-    image: grafana/grafana-enterprise
+    image: grafana/grafana
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
