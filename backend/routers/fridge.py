@@ -5,6 +5,12 @@ from database import database_session
 from schemas.Item import ItemPost
 from helpers.categoryH import fixItemH, openItemH
 from helpers.timeH import calcDate, today
+from routers.metrics import fridge_additions, things
+
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level="INFO")
 
 fridgeRouter = APIRouter(prefix="/fridge")
 
@@ -19,7 +25,9 @@ async def getItem(
         query = query.filter(Item.ownedBy == ownedBy)
     if (expiresIn is not None):
         query = query.filter(Item.expDate <= calcDate(today(), expiresIn), Item.expDate >= today())
+
     return query.all()
+
 
 @fridgeRouter.post("")
 async def postItem(
@@ -39,7 +47,13 @@ async def postItem(
     currDbSession.add(item)
     currDbSession.commit()
     currDbSession.refresh(item)
+
+    fridge_additions.inc()
+    things.inc(data.amount)
+    logger.info("Added %s by %s", data.name, data.ownedBy)
+
     return item
+
 
 @fridgeRouter.get("/{itemId}")
 async def getItemById(
@@ -47,6 +61,7 @@ async def getItemById(
                         currDbSession: Session = Depends(database_session)
                     ):
     return currDbSession.query(Item).filter(Item.id == itemId).one()
+
 
 @fridgeRouter.patch("/{itemId}")
 async def openItem(
@@ -68,4 +83,5 @@ async def deleteItem(
     item = currDbSession.query(Item).filter(Item.id == itemId).one()
     currDbSession.delete(item)
     currDbSession.refresh(item)
+    things.dec(Item.amount)
     return item

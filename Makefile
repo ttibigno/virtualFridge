@@ -1,9 +1,9 @@
 .PHONY: install run stop uninstall cleanup
 
 install:
-	docker compose up --build
+	docker compose up --build 
 run:
-	docker compose up
+	docker compose up 
 stop:
 	docker compose down
 uninstall:
