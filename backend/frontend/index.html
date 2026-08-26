@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fridge</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+<main>
+    <h1>Fridge</h1>
+    <form id="itemForm">
+        <input id="name" placeholder="Name" required>
+        <input id="ownedBy" placeholder="Owner" required>
+        <select id="categoryId" required>
+            <option value="">Category</option>
+        </select>
+        <input id="amount" type="number" min="1" placeholder="Amount">
+        <select id="unit">
+            <option value="">Unit</option>
+            <option value="piece">Piece</option>
+            <option value="kg">Kg</option>
+            <option value="g">Gram</option>
+            <option value="l">Liter</option>
+            <option value="ml">Milliliter</option>
+        </select>
+        <input id="expDate" type="date">
+        <button type="submit">Add Item</button>
+    </form>
+    <hr>
+    <div>
+        <input id="owner" placeholder="Owner">
+        <input id="expireDays" type="number" min="0" placeholder="Expires in days">
+        <button type="button" id="searchButton">Search</button>
+    </div>
+    <ul id="itemList"></ul>
+</main>
+
+<script src="/frontend.js"></script>
+</body>
+</html>

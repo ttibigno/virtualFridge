@@ -1,0 +1,23 @@
+name: fridge-test
+
+services:
+  postgres-test:
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: test_password
+      POSTGRES_DB: test_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d test_db"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+
+  tests:
+    build:
+      context: ./backend/
+      dockerfile: tests/Dockerfile
+    environment: 
+      DATABASE_URL: postgresql+psycopg://postgres:test_password@postgres-test/test_db
+    depends_on:
+      postgres-test:
+        condition: service_healthy

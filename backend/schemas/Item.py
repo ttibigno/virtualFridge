@@ -1,5 +1,5 @@
 from datetime import date
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from enum import Enum
 
 class Unit(str, Enum):
@@ -8,12 +8,11 @@ class Unit(str, Enum):
     ml = "ml"
     l = "l"
     piece = "piece"
-    
 
 class ItemPost(BaseModel):
-    name: str
-    ownedBy: str
+    name: str = Field(min_length=1, max_length = 30)
+    ownedBy: str = Field(min_length=1, max_length = 20)
     categoryId: int
-    amount: float | None = None
+    amount: float | None = Field(default=None, ge=0)
     unit: Unit | None = None
     expDate: date | None = None

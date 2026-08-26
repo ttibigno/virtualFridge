@@ -22,16 +22,16 @@ services:
       timeout: 2s
       retries: 30
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+#  adminer:
+#    image: adminer
+#    restart: always
+#    ports:
+#      - 8080:8080
   loki:
     image: grafana/loki:3.7.0
     command: -config.file=/etc/loki/loki-config.yaml
     volumes:
-     # - ./compose.yaml:/mnt/config
+      # - ./compose.yaml:/mnt/config
       - ./observability/loki/loki-config.yaml:/etc/loki/loki-config.yaml
       - loki-data:/loki
     ports:
@@ -52,7 +52,7 @@ services:
       - ./observability/grafana/provisioning:/etc/grafana/provisioning
       - ./observability/grafana/dashboards:/var/lib/grafana/dashboards
       - grafana-data:/var/lib/grafana
-    ports: 
+    ports:
       - 3000:3000
     depends_on:
       - loki
@@ -68,19 +68,26 @@ services:
       - ./observability/prometheus/rules.yaml:/etc/prometheus/rules.yaml:ro
       - prometheus-data:/prometheus
 
+  scripts:
+    build: ./scripts/
+    profiles:
+      - tools
+    depends_on:
+      backend:
+        condition: service_started
 
 volumes:
   loki-data:
   grafana-data:
   prometheus-data:
   postgres-data:
-  
+
   #alloy:
   #  image: grafana/alloy:latest
-  #  command: 
+  #  command:
   #    - --storage.path=var/lib/alloy/data
   #    - /etc/alloy/config.alloy
   #  volumes:
   #    - ./observability/alloy/alloy-config.yml:/etc/alloy/config.alloy
-  #  ports: 
+  #  ports:
   #    - 12345:12345

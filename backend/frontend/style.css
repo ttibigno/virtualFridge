@@ -1,0 +1,18 @@
+body {
+    font-family: sans-serif;
+    max-width: 700px;
+    margin: 30px auto;
+}
+
+label {
+    display: inline-block;
+    min-width: 120px;
+}
+
+button {
+    margin: 5px 0;
+}
+
+li {
+    margin-bottom: 15px;
+}

@@ -269,7 +269,7 @@
             "uid": "prometheus"
           },
           "editorMode": "builder",
-          "expr": "http_requests_total{path=\"/fridge\"}",
+          "expr": "http_requests_total{path=\"/api/v1/fridge\"}",
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"

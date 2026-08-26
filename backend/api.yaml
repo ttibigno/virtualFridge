@@ -99,9 +99,11 @@ components:
           readOnly: true
         name:
           type: string
+          minLenght: 1
           maxLength: 30
         ownedBy:
           type: string
+          minLenght: 1
           maxLength: 20
         categoryId:
           type: integer
@@ -135,9 +137,11 @@ components:
       properties:
         name:
           type: string
+          minLenght: 1
           maxLength: 30
         ownedBy:
           type: string
+          minLenght: 1
           maxLength: 20
         categoryId:
           type: integer

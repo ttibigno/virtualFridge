@@ -10,3 +10,10 @@ dependencies = [
     "structlog",
     "prometheus-client"
 ]
+[dependency-groups]
+tests = [
+    "httpx2",
+    "pytest"
+]
+[tool.pytest.ini_options]
+pythonpath = ["."]

@@ -2,11 +2,17 @@ from tables.Category import Category
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from tables.Item import Base
+import os
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql+psycopg://postgres:password@postgres/backend_db"
+)
 
 #https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
-engine = create_engine("postgresql+psycopg://postgres:password@postgres/backend_db",
+engine = create_engine(DATABASE_URL,
     pool_recycle=3600,
-    echo=True)
+#    echo=True
+)
 
 def database_session():
     with Session(engine) as session:

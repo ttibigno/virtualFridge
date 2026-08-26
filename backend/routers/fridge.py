@@ -1,16 +1,15 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from tables.Item import Item
 from database import database_session
 from schemas.Item import ItemPost
 from helpers.categoryH import fixItemH, openItemH
 from helpers.timeH import calcDate, today
-from routers.metrics import fridge_additions, things
+from middleware.observability import fridge_additions, things
+import structlog
 
-import logging
-
-logger = logging.getLogger(__name__)
-logging.basicConfig(level="INFO")
+structlog.configure(processors = [structlog.processors.TimeStamper(fmt="iso"), structlog.stdlib.add_log_level, structlog.processors.JSONRenderer()])
+logger = structlog.getLogger()
 
 fridgeRouter = APIRouter(prefix="/fridge")
 
@@ -25,15 +24,10 @@ async def getItem(
         query = query.filter(Item.ownedBy == ownedBy)
     if (expiresIn is not None):
         query = query.filter(Item.expDate <= calcDate(today(), expiresIn), Item.expDate >= today())
-
     return query.all()
 
-
 @fridgeRouter.post("")
-async def postItem(
-                    data: ItemPost,
-                    currDbSession: Session = Depends(database_session)
-                    ):
+async def postItem(data: ItemPost, currDbSession: Session = Depends(database_session)):
     item = Item(
         name = data.name,
         ownedBy = data.ownedBy,
@@ -49,39 +43,30 @@ async def postItem(
     currDbSession.refresh(item)
 
     fridge_additions.inc()
-    things.inc(data.amount)
-    logger.info("Added %s by %s", data.name, data.ownedBy)
-
+    things.inc(item.amount)
+    logger.info("itemCreated", itemId = str(item.id), owner = item.ownedBy, categoryId = item.categoryId)
     return item
 
-
 @fridgeRouter.get("/{itemId}")
-async def getItemById(
-                        itemId: str,
-                        currDbSession: Session = Depends(database_session)
-                    ):
+async def getItemById(itemId: str, currDbSession: Session = Depends(database_session)):
     return currDbSession.query(Item).filter(Item.id == itemId).one()
 
-
 @fridgeRouter.patch("/{itemId}")
-async def openItem(
-                    itemId: str,
-                    currDbSession: Session = Depends(database_session)
-                    ):
+async def openItem(itemId: str, currDbSession: Session = Depends(database_session)):
     item = currDbSession.query(Item).filter(Item.id == itemId).one()
     openItemH(item, currDbSession)
 
     currDbSession.commit()
     currDbSession.refresh(item)
+    logger.info("itemOpened", itemId = str(item.id), owner = item.ownedBy, categoryId = item.categoryId, openedAt = item.openedAt)
     return item
 
 @fridgeRouter.delete("/{itemId}")
-async def deleteItem(
-                        itemId: str,
-                        currDbSession: Session = Depends(database_session)
-                    ):
+async def deleteItem(itemId: str, currDbSession: Session = Depends(database_session)):
     item = currDbSession.query(Item).filter(Item.id == itemId).one()
+
     currDbSession.delete(item)
-    currDbSession.refresh(item)
-    things.dec(Item.amount)
+    currDbSession.commit()
+    things.dec(item.amount)
+    logger.info("itemDeleted", itemId = str(item.id), owner = item.ownedBy, categoryId = item.categoryId)
     return item
