@@ -5,7 +5,7 @@ from database import database_session
 from schemas.Item import ItemPost
 from helpers.categoryH import fixItemH, openItemH
 from helpers.timeH import calcDate, today
-from middleware.observability import fridge_additions, things
+from middleware.observability import fridge_additions, things, opened_items
 import structlog
 
 structlog.configure(processors = [structlog.processors.TimeStamper(fmt="iso"), structlog.stdlib.add_log_level, structlog.processors.JSONRenderer()])
@@ -61,6 +61,7 @@ async def openItem(itemId: str, currDbSession: Session = Depends(database_sessio
     currDbSession.commit()
     currDbSession.refresh(item)
     logger.info("itemOpened", itemId = str(item.id), owner = item.ownedBy, categoryId = item.categoryId, openedAt = item.openedAt)
+    opened_items.inc()
     return item
 
 @fridgeRouter.delete("/{itemId}")

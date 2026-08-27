@@ -31,6 +31,11 @@ things = Gauge(
     "Number of things in the fridge"
 )
 
+opened_items = Gauge(
+    "opened_items_total",
+    "Total number of opened items"
+)
+
 def setup_observability(app: FastAPI):
     @app.middleware("http")
     async def httpMiddleware(request: Request, call_next):
