@@ -36,14 +36,38 @@
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
-        }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{__name__=\"number_of_things\", instance=\"backend:8000\", job=\"backend\"}",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Total Items"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "{__name__=\"opened_items_total\", instance=\"backend:8000\", job=\"backend\"}",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "Opened Items"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
@@ -92,6 +116,18 @@
           "legendFormat": "__auto",
           "range": true,
           "refId": "A"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "builder",
+          "expr": "opened_items_total",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Number of things",
@@ -196,7 +232,7 @@
           "refId": "B"
         }
       ],
-      "title": "New panel",
+      "title": "Responses",
       "type": "stat"
     },
     {
@@ -576,18 +612,55 @@
               {
                 "color": "green",
                 "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
-        }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "histogram_quantile(\r\n  0.95,\r\n  sum by (le) (\r\n    rate(http_request_duration_seconds_bucket[5m])\r\n  )\r\n)*1000",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "P95 (ms)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "histogram_quantile(\r\n  0.99,\r\n  sum by (le) (\r\n    rate(http_request_duration_seconds_bucket[5m])\r\n  )\r\n)*1000",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "P99 (ms)"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "histogram_quantile(\r\n  0.50,\r\n  sum by (le) (\r\n    rate(http_request_duration_seconds_bucket[5m])\r\n  )\r\n)*1000",
+              "scope": "series"
+            },
+            "properties": [
+              {
+                "id": "displayName",
+                "value": "P50 (ms)"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
+        "h": 10,
+        "w": 24,
         "x": 0,
         "y": 24
       },
@@ -643,38 +716,8 @@
           "refId": "C"
         }
       ],
-      "title": "Percentili",
+      "title": "P50, P95, P99 (ms)",
       "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 24
-      },
-      "id": 10,
-      "options": {},
-      "pluginVersion": "13.2.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "editorMode": "builder",
-          "expr": "",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "New panel",
-      "type": "__unconfigured-panel"
     }
   ],
   "preload": false,
@@ -700,7 +743,7 @@
   },
   "timezone": "browser",
   "title": "Metrics",
-  "version": 3,
+  "version": 5,
   "uid": "adgqwzq",
-  "id": 3345450902331392
+  "id": 3382100756918272
 }

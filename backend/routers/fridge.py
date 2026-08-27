@@ -71,5 +71,7 @@ async def deleteItem(itemId: str, currDbSession: Session = Depends(database_sess
     currDbSession.delete(item)
     currDbSession.commit()
     things.dec(item.amount)
+    if item.openedAt is not None:
+        opened_items.dec()
     logger.info("itemDeleted", itemId = str(item.id), owner = item.ownedBy, categoryId = item.categoryId)
     return item
