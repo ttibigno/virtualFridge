@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from tables.Item import Item
 from database import database_session
@@ -11,7 +11,7 @@ import structlog
 structlog.configure(processors = [structlog.processors.TimeStamper(fmt="iso"), structlog.stdlib.add_log_level, structlog.processors.JSONRenderer()])
 logger = structlog.getLogger()
 
-fridgeRouter = APIRouter(prefix="/fridge")
+fridgeRouter = APIRouter(prefix="/api/v1/fridge")
 
 @fridgeRouter.get("")
 async def getItem(
@@ -54,6 +54,8 @@ async def getItemById(itemId: str, currDbSession: Session = Depends(database_ses
 @fridgeRouter.patch("/{itemId}")
 async def openItem(itemId: str, currDbSession: Session = Depends(database_session)):
     item = currDbSession.query(Item).filter(Item.id == itemId).one()
+    if item.openedAt is not None:
+            raise HTTPException(status_code=409, detail="Item is already opened")
     openItemH(item, currDbSession)
 
     currDbSession.commit()

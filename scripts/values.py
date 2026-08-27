@@ -61,8 +61,7 @@ incorrectItemIds = [
 ]
 
 incorrectExpiresIn = [
-    -1,
+    "five",
     "",
-    True,
-    None
+    True
 ]

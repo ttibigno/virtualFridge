@@ -11,8 +11,8 @@ from prometheus_client import make_asgi_app
 
 app = FastAPI()
 
-app.include_router(fr, prefix="/api/v1")
-app.include_router(cr, prefix="/api/v1")
+app.include_router(fr)
+app.include_router(cr)
 
 setup_observability(app)
 

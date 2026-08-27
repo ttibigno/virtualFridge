@@ -39,22 +39,24 @@ def setup_observability(app: FastAPI):
         reqDuration = time.perf_counter() - startTime
 
         if (request.url.path != "/metrics/"):
+            route = request.scope.get("route") #Prendiamo la route per togliere tutti gli endpoint a ids
+            path = route.path if route else request.url.path
             http_requests_total.labels(
                 method=request.method,
                 status=str(response.status_code),
-                path= request.url.path
+                path= path
             ).inc()
     
             http_request_duration_seconds.labels(
                 method=request.method,
                 status = str(response.status_code),
-                path = request.url.path
+                path = path
             ).observe(reqDuration)
 
             logger.info(
                 "httpRequest",
                 method = request.method,
-                path = request.url.path,
+                path = path,
                 statusCode = response.status_code,
                 duration = reqDuration
             )

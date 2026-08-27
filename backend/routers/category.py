@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from tables.Category import Category
 from database import database_session
 
-categoryRouter = APIRouter(prefix="/categories")
+categoryRouter = APIRouter(prefix="/api/v1/categories")
 
 @categoryRouter.get("")
 async def getCategories(currDbSession: Session = Depends(database_session)):

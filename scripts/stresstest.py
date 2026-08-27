@@ -15,13 +15,7 @@ def getItem(correct: bool):
             params["expiresIn"] = random.randint(0, 30)
         requests.get(f"http://backend:8000/api/v1/fridge", params=params)
     else:
-        params = {}
-        if random.choice([True, False]):
-            params["ownedBy"] = random.choice(incorrectOwners)
-        if random.choice([True, False]):
-            params["expiresIn"] = random.choice(incorrectExpiresIn)
-        if not params:
-            params["ownedBy"] = random.choice(incorrectOwners)
+        params = {"expiresIn": random.choice(incorrectExpiresIn)}
         requests.get(f"http://backend:8000/api/v1/fridge", params=params)
 
 def postItem(correct: bool):

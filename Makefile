@@ -1,6 +1,7 @@
 .PHONY: install run test populate stress stop uninstall cleanup
 
 install:
+	./scripts/setup.sh
 	docker compose up --build -d
 run:
 	docker compose up -d
