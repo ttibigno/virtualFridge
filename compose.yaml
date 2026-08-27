@@ -24,6 +24,18 @@ services:
       timeout: 2s
       retries: 30
 
+#  backup-restore:
+#    build:
+#      context: ./backend/backup
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#    environment:
+#      POSTGRES_DB: ${POSTGRES_DB}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#    volumes:
+#      - ./backups:/backups
+
 #  adminer:
 #    image: adminer
 #    restart: always
